@@ -42,19 +42,46 @@ jobs:
             printf '{ "config": { "default": true, "MD013": false } }\n' > .markdownlint-cli2.jsonc
           fi
 
+      - name: Collect Markdown files
+        id: markdown-files
+        shell: bash
+        run: |
+          files=()
+          for path in \
+            README.md \
+            CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md \
+            SECURITY.md \
+            NOTICE.md
+          do
+            [[ -f "$path" ]] && files+=("$path")
+          done
+
+          for dir in docs questions guides practice; do
+            if [[ -d "$dir" ]]; then
+              while IFS= read -r file; do
+                files+=("$file")
+              done < <(find "$dir" -type f -name '*.md' | sort)
+            fi
+          done
+
+          if [[ "${#files[@]}" -eq 0 ]]; then
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "has_files=true"
+            echo "files<<EOF"
+            printf '%s\n' "${files[@]}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Run markdownlint
+        if: steps.markdown-files.outputs.has_files == 'true'
         uses: DavidAnson/markdownlint-cli2-action@v20
         with:
-          globs: |
-            README.md
-            CONTRIBUTING.md
-            CODE_OF_CONDUCT.md
-            SECURITY.md
-            NOTICE.md
-            docs/**/*.md
-            questions/**/*.md
-            guides/**/*.md
-            practice/**/*.md
+          globs: ${{ steps.markdown-files.outputs.files }}
 
   spelling:
     name: Spell check
@@ -70,20 +97,47 @@ jobs:
             printf '{ "version": "0.2", "language": "en" }\n' > .cspell.json
           fi
 
+      - name: Collect spell-check files
+        id: spell-files
+        shell: bash
+        run: |
+          files=()
+          for path in \
+            README.md \
+            CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md \
+            SECURITY.md \
+            NOTICE.md
+          do
+            [[ -f "$path" ]] && files+=("$path")
+          done
+
+          for dir in docs questions guides practice; do
+            if [[ -d "$dir" ]]; then
+              while IFS= read -r file; do
+                files+=("$file")
+              done < <(find "$dir" -type f -name '*.md' | sort)
+            fi
+          done
+
+          if [[ "${#files[@]}" -eq 0 ]]; then
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "has_files=true"
+            echo "files<<EOF"
+            printf '%s\n' "${files[@]}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Run cspell
+        if: steps.spell-files.outputs.has_files == 'true'
         uses: streetsidesoftware/cspell-action@v7
         with:
           config: .cspell.json
-          files: |
-            README.md
-            CONTRIBUTING.md
-            CODE_OF_CONDUCT.md
-            SECURITY.md
-            NOTICE.md
-            docs/**/*.md
-            questions/**/*.md
-            guides/**/*.md
-            practice/**/*.md
+          files: ${{ steps.spell-files.outputs.files }}
           incremental_files_only: false
 
   link-check:
