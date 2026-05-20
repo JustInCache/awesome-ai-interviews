@@ -1,0 +1,35 @@
+name: Content quality issue
+description: Report an outdated, unclear, duplicated, or incorrect answer.
+title: "[Quality]: "
+labels:
+  - content-quality
+body:
+  - type: input
+    id: file
+    attributes:
+      label: File or page
+      description: Link or path to the affected content.
+    validations:
+      required: true
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue type
+      options:
+        - Incorrect explanation
+        - Outdated information
+        - Missing nuance or trade-offs
+        - Duplicate content
+        - Broken link
+        - Attribution or license concern
+        - Formatting issue
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain what should be fixed and, if possible, suggest the improved wording.
+    validations:
+      required: true
+
