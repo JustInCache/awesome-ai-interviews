@@ -37,7 +37,7 @@ jobs:
           } > .github/auto-commit/heartbeat.md
 
       - name: Commit heartbeat when changed
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: scheduled repository heartbeat"
           file_pattern: .github/auto-commit/heartbeat.md
