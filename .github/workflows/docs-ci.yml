@@ -71,7 +71,7 @@ jobs:
           fi
 
       - name: Run cspell
-        uses: streetsidesoftware/cspell-action@v7
+        uses: streetsidesoftware/cspell-action@v8
         with:
           config: .cspell.json
           files: |
