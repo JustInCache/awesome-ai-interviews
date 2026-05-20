@@ -1,0 +1,19 @@
+accept = [200, 204, 206, 301, 302, 429]
+exclude = [
+  '^mailto:',
+  '^tel:',
+  'localhost',
+  '127.0.0.1'
+]
+exclude_path = [
+  'LLM-Interview-Questions-and-Answers-Hub',
+  'llms-interview-questions',
+  'ai-engineering-interview-questions',
+  'interview_questions',
+  'archive'
+]
+max_retries = 3
+retry_wait_time = 5
+timeout = 30
+user_agent = 'awesome-ai-interviews-link-checker'
+
