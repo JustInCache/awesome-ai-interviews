@@ -1,0 +1,54 @@
+name: Question request
+description: Suggest a new AI interview question or missing topic.
+title: "[Question]: "
+labels:
+  - question-request
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: "Example: RAG evaluation, prompt injection, KV cache, AI agents."
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Target role
+      options:
+        - AI Engineer
+        - LLM Engineer
+        - GenAI Engineer
+        - AI Agent Engineer
+        - ML Engineer
+        - MLOps Engineer
+        - Data Scientist
+        - AI Researcher
+        - AI Architect
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Experience level
+      options:
+        - Beginner
+        - Intermediate
+        - Senior
+        - Staff / Principal
+        - Mixed
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Interview question
+      description: Write the question as an interviewer would ask it.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Why this matters
+      description: Add context, expected answer signals, or useful references.
