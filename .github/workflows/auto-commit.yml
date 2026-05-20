@@ -1,0 +1,47 @@
+name: Scheduled Repository Heartbeat
+
+on:
+  schedule:
+    - cron: "17 */12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scheduled-repository-heartbeat
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    name: Auto commit heartbeat
+    runs-on: ubuntu-latest
+    if: github.repository == 'JustInCache/awesome-ai-interviews'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update heartbeat file
+        shell: bash
+        run: |
+          mkdir -p .github/auto-commit
+          {
+            echo "# Repository heartbeat"
+            echo
+            echo "Last automated maintenance heartbeat: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo "This file is updated by the scheduled GitHub Actions workflow."
+          } > .github/auto-commit/heartbeat.md
+
+      - name: Commit heartbeat when changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: scheduled repository heartbeat"
+          file_pattern: .github/auto-commit/heartbeat.md
+          commit_user_name: awesome-ai-interviews-bot
+          commit_user_email: awesome-ai-interviews-bot@users.noreply.github.com
+          commit_author: awesome-ai-interviews-bot <awesome-ai-interviews-bot@users.noreply.github.com>
+

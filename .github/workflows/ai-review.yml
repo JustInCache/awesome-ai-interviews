@@ -1,0 +1,44 @@
+name: AI Pull Request Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-agent-review:
+    name: PR-Agent review
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run AI review
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CONFIG.MODEL: gpt-4o
+          CONFIG.FALLBACK_MODELS: '["gpt-4o-mini"]'
+          GITHUB_ACTION.AUTO_REVIEW: true
+          GITHUB_ACTION.AUTO_DESCRIBE: true
+          GITHUB_ACTION.AUTO_IMPROVE: false
+          PR_REVIEWER.EXTRA_INSTRUCTIONS: >-
+            Focus on documentation quality, factual accuracy, duplicate content,
+            broken internal navigation, interview usefulness, attribution risk,
+            and whether the answer is clear for candidates at the stated level.
+          PR_DESCRIPTION.EXTRA_INSTRUCTIONS: >-
+            Summarize changed topics, roles, levels, and any attribution or
+            licensing impact.
+

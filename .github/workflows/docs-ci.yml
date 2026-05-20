@@ -1,0 +1,152 @@
+name: Documentation CI
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+      - ".github/workflows/**"
+      - ".markdownlint-cli2.jsonc"
+      - ".cspell.json"
+      - ".lychee.toml"
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "**/*.md"
+      - ".github/workflows/**"
+      - ".markdownlint-cli2.jsonc"
+      - ".cspell.json"
+      - ".lychee.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdownlint:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create bootstrap Markdown lint config when missing
+        shell: bash
+        run: |
+          if [[ ! -f .markdownlint-cli2.jsonc ]]; then
+            printf '{ "config": { "default": true, "MD013": false } }\n' > .markdownlint-cli2.jsonc
+          fi
+
+      - name: Run markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          globs: |
+            README.md
+            CONTRIBUTING.md
+            CODE_OF_CONDUCT.md
+            SECURITY.md
+            NOTICE.md
+            docs/**/*.md
+            questions/**/*.md
+            guides/**/*.md
+            practice/**/*.md
+
+  spelling:
+    name: Spell check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create bootstrap spell-check config when missing
+        shell: bash
+        run: |
+          if [[ ! -f .cspell.json ]]; then
+            printf '{ "version": "0.2", "language": "en" }\n' > .cspell.json
+          fi
+
+      - name: Run cspell
+        uses: streetsidesoftware/cspell-action@v7
+        with:
+          config: .cspell.json
+          files: |
+            README.md
+            CONTRIBUTING.md
+            CODE_OF_CONDUCT.md
+            SECURITY.md
+            NOTICE.md
+            docs/**/*.md
+            questions/**/*.md
+            guides/**/*.md
+            practice/**/*.md
+          incremental_files_only: false
+
+  link-check:
+    name: Link check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create bootstrap link-check config when missing
+        shell: bash
+        run: |
+          if [[ ! -f .lychee.toml ]]; then
+            printf 'accept = [200, 204, 206, 301, 302, 429]\ntimeout = 30\n' > .lychee.toml
+          fi
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config .lychee.toml
+            README.md
+            docs/**/*.md
+            questions/**/*.md
+            guides/**/*.md
+            practice/**/*.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repository-health:
+    name: Repository health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required community files
+        shell: bash
+        run: |
+          required_files=(
+            "README.md"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "SECURITY.md"
+            "NOTICE.md"
+            "LICENSE"
+          )
+
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::warning file=$file::Required repository file is missing"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            echo "Community files are not complete yet. This is a bootstrap warning until the repository setup PR lands."
+          fi
+
+      - name: Check docs organization plan exists
+        shell: bash
+        run: |
+          if [[ ! -f docs/REPO_ORGANIZATION_PLAN.md ]]; then
+            echo "::warning file=docs/REPO_ORGANIZATION_PLAN.md::Repository organization plan is missing"
+          fi
