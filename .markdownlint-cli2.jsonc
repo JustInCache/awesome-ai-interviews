@@ -1,0 +1,39 @@
+{
+  "config": {
+    "default": true,
+    "MD013": {
+      "line_length": 120,
+      "code_blocks": false,
+      "tables": false,
+      "headings": false
+    },
+    "MD024": {
+      "siblings_only": true
+    },
+    "MD026": {
+      "punctuation": ".,;:!。，；：！"
+    },
+    "MD033": {
+      "allowed_elements": [
+        "a",
+        "br",
+        "details",
+        "div",
+        "img",
+        "p",
+        "summary"
+      ]
+    },
+    "MD041": false
+  },
+  "ignores": [
+    "LLM-Interview-Questions-and-Answers-Hub/**",
+    "llms-interview-questions/**",
+    "ai-engineering-interview-questions/**",
+    "interview_questions/**",
+    "archive/**",
+    "node_modules/**",
+    "vendor/**"
+  ]
+}
+

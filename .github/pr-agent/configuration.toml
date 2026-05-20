@@ -1,0 +1,26 @@
+[config]
+model = "gpt-4o"
+fallback_models = ["gpt-4o-mini"]
+response_language = "en-US"
+
+[github_action_config]
+auto_review = true
+auto_describe = true
+auto_improve = false
+
+[pr_reviewer]
+require_score_review = false
+require_tests_review = true
+extra_instructions = """
+Review this repository as a documentation-heavy AI interview preparation project.
+Prioritize factual correctness, interview usefulness, duplicate content, broken
+internal navigation, missing attribution, licensing risk, and whether answers
+match the intended role and seniority level.
+"""
+
+[pr_description]
+publish_labels = true
+extra_instructions = """
+Summarize changed topics, roles, levels, and any attribution or license impact.
+"""
+
