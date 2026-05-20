@@ -13,11 +13,13 @@
   ],
   "words": [
     "Agentic",
+    "cheatsheets",
     "codeowners",
     "GenAI",
     "GraphRAG",
     "JustInCache",
     "LLMOps",
+    "llms",
     "MLOps",
     "multimodal",
     "Qodo",
@@ -28,4 +30,3 @@
     "vectorstores"
   ]
 }
-
