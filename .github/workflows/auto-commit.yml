@@ -2,7 +2,7 @@ name: Scheduled Repository Heartbeat
 
 on:
   schedule:
-    - cron: "17 */12 * * *"
+    - cron: "17 */4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -44,4 +44,3 @@ jobs:
           commit_user_name: awesome-ai-interviews-bot
           commit_user_email: awesome-ai-interviews-bot@users.noreply.github.com
           commit_author: awesome-ai-interviews-bot <awesome-ai-interviews-bot@users.noreply.github.com>
-
