@@ -24,23 +24,22 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update heartbeat file
+      - name: Update README last updated date
         shell: bash
         run: |
-          mkdir -p .github/auto-commit
-          {
-            echo "# Repository heartbeat"
-            echo
-            echo "Last automated maintenance heartbeat: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-            echo
-            echo "This file is updated by the scheduled GitHub Actions workflow."
-          } > .github/auto-commit/heartbeat.md
+          today="$(date -u '+%Y-%m-%d')"
 
-      - name: Commit heartbeat when changed
+          if grep -qE '^\*\*Last updated:\*\* ' README.md; then
+            perl -0pi -e "s/\\*\\*Last updated:\\*\\* .*/**Last updated:** ${today}/" README.md
+          else
+            perl -0pi -e "s/^(# .+\\n)/\$1\\n**Last updated:** ${today}\\n/" README.md
+          fi
+
+      - name: Commit README update when changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: scheduled repository heartbeat"
-          file_pattern: .github/auto-commit/heartbeat.md
+          commit_message: "chore: update repository freshness date"
+          file_pattern: README.md
           commit_user_name: awesome-ai-interviews-bot
           commit_user_email: awesome-ai-interviews-bot@users.noreply.github.com
           commit_author: awesome-ai-interviews-bot <awesome-ai-interviews-bot@users.noreply.github.com>
