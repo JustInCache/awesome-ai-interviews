@@ -2,6 +2,8 @@
 
 The open-source interview preparation hub for AI, LLM, GenAI, RAG, agents, ML engineering, data science, and AI system design roles.
 
+**Last updated:** 2026-05-21
+
 ## Start Here
 
 - [Repository organization plan](docs/REPO_ORGANIZATION_PLAN.md)
@@ -29,8 +31,6 @@ This repository includes production-oriented GitHub Actions for:
 - Link checking
 - Repository health checks
 - AI pull request review
-- Scheduled repository heartbeat commits every 12 hours
-- Dependabot updates for GitHub Actions
+- Scheduled README freshness updates every 4 hours
 
 The AI review workflow requires an `OPENAI_API_KEY` repository secret.
-
