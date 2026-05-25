@@ -24,15 +24,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.AUTO_COMMIT_TOKEN }}
 
-      - name: Update README last updated date
+      - name: Update README last updated timestamp
         shell: bash
         run: |
-          today="$(date -u '+%Y-%m-%d')"
+          timestamp="$(date -u '+%Y-%m-%d %H:%M UTC')"
 
           if grep -qE '^\*\*Last updated:\*\* ' README.md; then
-            perl -0pi -e "s/\\*\\*Last updated:\\*\\* .*/**Last updated:** ${today}/" README.md
+            perl -0pi -e "s/\\*\\*Last updated:\\*\\* .*/**Last updated:** ${timestamp}/" README.md
           else
-            perl -0pi -e "s/^(# .+\\n)/\$1\\n**Last updated:** ${today}\\n/" README.md
+            perl -0pi -e "s/^(# .+\\n)/\$1\\n**Last updated:** ${timestamp}\\n/" README.md
           fi
 
       - name: Commit README update when changed
