@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.AUTO_COMMIT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update README last updated timestamp
         shell: bash
@@ -35,11 +35,16 @@ jobs:
             perl -0pi -e "s/^(# .+\\n)/\$1\\n**Last updated:** ${timestamp}\\n/" README.md
           fi
 
+      - name: Use PAT for push
+        shell: bash
+        run: |
+          git remote set-url origin "https://x-access-token:${{ secrets.AUTO_COMMIT_TOKEN }}@github.com/${{ github.repository }}.git"
+
       - name: Commit README update when changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update repository freshness date"
           file_pattern: README.md
           commit_user_name: JustInCache
-          commit_user_email: JustInCache@users.noreply.github.com
-          commit_author: JustInCache <JustInCache@users.noreply.github.com>
+          commit_user_email: 105823120+JustInCache@users.noreply.github.com
+          commit_author: JustInCache <105823120+JustInCache@users.noreply.github.com>
