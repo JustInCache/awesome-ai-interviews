@@ -2,7 +2,7 @@
 
 The open-source interview preparation hub for AI, LLM, GenAI, RAG, agents, ML engineering, data science, and AI system design roles.
 
-**Last updated:** 2026-06-04 05:11 UTC
+**Last updated:** 2026-06-04 11:26 UTC
 
 ## Start Here
 
