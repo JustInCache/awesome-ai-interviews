@@ -28,6 +28,7 @@
     "ai-engineering-interview-questions/**",
     "interview_questions/**",
     "archive/**",
+    "_archive/**",
     "node_modules/**",
     "vendor/**"
   ]
