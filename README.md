@@ -65,7 +65,7 @@ Most AI interview resources are scattered, outdated, or generic. This repository
 
 ## Navigate
 
-```
+```text
 awesome-ai-interviews/
 ├── README.md              ← You are here (Top 50 + navigation)
 │
@@ -222,6 +222,7 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)
 <summary><strong>Q3. What is self-attention and why is it called "self-attention"?</strong></summary>
 
 Self-attention lets each token in a sequence attend to **all other tokens in the same sequence** — hence "self". For each token, three vectors are computed from its embedding:
+
 - **Query (Q)** — what this token is looking for
 - **Key (K)** — what this token can offer
 - **Value (V)** — the actual content to aggregate
@@ -237,10 +238,12 @@ Attention scores = dot product of Q with all Ks, scaled by √dₖ, then softmax
 <summary><strong>Q4. What is tokenization? Explain BPE.</strong></summary>
 
 Tokenization converts raw text into discrete token IDs the model can process. Why not just use characters or words?
+
 - **Characters**: sequence too long, loses meaning
 - **Words**: vocabulary explodes; unknown words become `[UNK]`
 
 **Byte Pair Encoding (BPE)** — the dominant approach:
+
 1. Start with character vocabulary
 2. Iteratively merge the most frequent adjacent pair
 3. Repeat until vocabulary reaches target size (e.g. 50K–128K)
@@ -272,13 +275,14 @@ Result: **several-fold speedup** for long generations.
 
 MoE replaces the dense feed-forward layer in each Transformer block with multiple "expert" FFN networks, plus a **router** that selects which experts to activate per token.
 
-```
+```text
 Token → Router → Top-K experts (e.g. 2 of 8) → Weighted sum of expert outputs
 ```
 
 **Why it matters**: A MoE model with 8×7B parameters activates only ~13B parameters per token — giving GPT-4-class capability at Llama-7B inference cost. Used in Mixtral, DeepSeek, GPT-4.
 
 **Trade-offs**:
+
 - Training instability (load balancing across experts)
 - Communication overhead in multi-GPU setups
 - Full model still requires large memory even though only subset activates per token
@@ -324,6 +328,7 @@ Standard **Multi-Head Attention (MHA)** has one K,V head per Q head — the KV c
 Traditional absolute positional embeddings add a fixed vector to each token's embedding — which doesn't generalize beyond training length. RoPE instead **rotates** the Q and K vectors by an angle proportional to their position, encoding position in the **relationship** between tokens rather than the tokens themselves.
 
 Key properties:
+
 - **Relative position is captured**: the dot product QᵢKⱼ depends only on positions i–j
 - **Extrapolates better** to longer sequences than the model was trained on (with techniques like YaRN, RoPE scaling)
 - **No extra parameters**: positional encoding is a deterministic transformation
@@ -359,6 +364,7 @@ BF16 is preferred over FP16 for training because its larger exponent range preve
 The context window (or context length) is the maximum number of tokens the model can process at once — both input and output combined. It defines the model's "working memory".
 
 **Why it matters**:
+
 - Limits how much document you can feed to a RAG system
 - Determines how long a conversation can be before you must truncate
 - Longer contexts = quadratic growth in attention compute (O(n²))
@@ -375,6 +381,7 @@ Modern context windows: GPT-4o (128K), Claude 3.5 (200K), Gemini 1.5 (1M+). Enab
 All three control **token sampling randomness** during generation:
 
 **Temperature (τ)**: scales the logits before softmax. `logits_scaled = logits / τ`
+
 - τ → 0: deterministic (always pick top token, equivalent to greedy)
 - τ = 1: standard sampling
 - τ > 1: more random/creative
@@ -429,6 +436,7 @@ Prompt injection occurs when user-provided input overrides or hijacks your syste
 **Why it's hard**: LLMs cannot architecturally distinguish between trusted system prompt tokens and untrusted user tokens.
 
 **Defense in depth**:
+
 1. **Input filtering** — pattern matching for known injection phrases
 2. **Prompt hardening** — use delimiters, repeat key constraints, put critical instructions last
 3. **Output filtering** — classify model output for policy violations before serving
@@ -445,6 +453,7 @@ No single defense is sufficient. Layer all four.
 Research shows LLMs have a strong recency bias and a weak attention to information placed in the **middle** of long contexts. When you stuff a 128K-token context with 50 documents, models reliably use documents at the start and end — but miss critical information placed in the middle.
 
 **Mitigations**:
+
 - Put the most important context at the beginning or end of the prompt
 - Use re-ranking to surface the best chunks to the top of context
 - Limit context to only the most relevant chunks (retrieval quality matters more than context size)
@@ -458,7 +467,7 @@ Research shows LLMs have a strong recency bias and a weak attention to informati
 
 ReAct (Reasoning + Acting) interleaves reasoning traces and action calls in a single prompt loop:
 
-```
+```text
 Thought: I need to find the current price of AAPL.
 Action: search("AAPL current stock price")
 Observation: AAPL is trading at $212.50
@@ -480,11 +489,12 @@ This is the foundation of most production AI agents. By making the model externa
 
 RAG is an architecture that augments an LLM with a retrieval step — pulling relevant documents from an external knowledge base before generation. Instead of relying solely on the model's parametric memory (which is frozen, can hallucinate, and has a knowledge cutoff), RAG grounds responses in retrieved facts.
 
-```
+```text
 Query → Retrieve (vector search) → Augment prompt with context → Generate answer
 ```
 
 **Why it matters over fine-tuning**:
+
 - Knowledge can be updated without retraining
 - Sources are citable and auditable
 - Works for private enterprise data the model was never trained on
@@ -516,6 +526,7 @@ Chunking splits documents into pieces small enough to embed and retrieve meaning
 Pure vector (semantic) search is great for meaning but fails for exact matches — names, codes, abbreviations, rare technical terms. Pure keyword (BM25) search misses synonyms and paraphrases.
 
 **Hybrid search** combines both:
+
 1. Run BM25 keyword search → ranked list A
 2. Run vector similarity search → ranked list B
 3. Merge with **Reciprocal Rank Fusion (RRF)** or learned weights
@@ -530,7 +541,7 @@ Result: handles both "what does GQA stand for?" (exact) and "explain multi-head 
 
 Initial retrieval (BM25 + vector) is fast but imprecise — it retrieves a candidate pool, not the definitive top-K. Re-ranking applies a heavier **cross-encoder** model that scores the query against each candidate document jointly (rather than comparing embeddings independently).
 
-```
+```text
 Query + Doc A → CrossEncoder → Score: 0.92
 Query + Doc B → CrossEncoder → Score: 0.61
 Query + Doc C → CrossEncoder → Score: 0.88
@@ -564,11 +575,13 @@ Cross-encoders are more accurate because they can model query-document interacti
 A RAG system has two components to evaluate separately and together:
 
 **Retrieval metrics**:
+
 - **Recall@K** — did the relevant document appear in top K?
 - **MRR** — where did the relevant document rank?
 - **Context Precision** — are retrieved chunks actually relevant?
 
 **Generation metrics** (often using LLM-as-judge):
+
 - **Faithfulness** — is the answer grounded in the retrieved context? (anti-hallucination)
 - **Answer Relevance** — does the answer address the query?
 - **Context Recall** — did the answer use all the relevant information in context?
@@ -584,6 +597,7 @@ A RAG system has two components to evaluate separately and together:
 Standard RAG retrieves semantically similar chunks — but struggles with questions requiring multi-hop reasoning across many documents (e.g., "What do all reports about supply chain disruption have in common?").
 
 **GraphRAG** (Microsoft, 2024) builds a knowledge graph from the corpus:
+
 1. Extract entities and relationships from documents using an LLM
 2. Build a graph where nodes = entities, edges = relationships
 3. Cluster communities of related entities
@@ -620,11 +634,12 @@ The key pattern: **Self-RAG** trains the model to output special tokens that tri
 
 An LLM call is stateless: input → output, done. An **AI agent** uses an LLM as a reasoning engine within a loop:
 
-```
+```text
 Perceive (input/observations) → Reason (LLM) → Act (tool calls / output) → Observe results → [repeat]
 ```
 
 Key additions over a single LLM call:
+
 - **Tools** — the agent can execute code, search databases, call APIs
 - **Memory** — context is maintained and managed across turns
 - **Agency** — the agent decides what to do next, not just what to say
@@ -641,6 +656,7 @@ Agents unlock tasks impossible with a single LLM call: code execution, web resea
 MCP (Anthropic, 2024) is an **open standard** that defines how AI models connect to external tools, data sources, and services. Think of it as HTTP for AI tool use — a universal protocol so any MCP-compatible model can use any MCP-compatible tool without custom integration code.
 
 **MCP architecture**:
+
 - **MCP Hosts** — applications like Claude, Cursor, VS Code Copilot
 - **MCP Clients** — protocol clients inside the host
 - **MCP Servers** — lightweight servers exposing tools, resources, and prompts
@@ -659,6 +675,7 @@ In a standard ReAct agent, the LLM decides its next action one step at a time �
 2. **Executor** — execute each step, optionally re-planning if a step fails
 
 **Benefits**:
+
 - Better task decomposition for long-horizon tasks
 - Planner can be a powerful expensive model; executor can be lighter
 - Easier to track progress and detect failures
@@ -682,6 +699,7 @@ Agents need different types of memory for different time horizons:
 | **Procedural** | Fine-tuned weights | Permanent | How to perform tasks |
 
 **Practical strategies**:
+
 - **Sliding window**: keep last N turns in context
 - **Summarization**: compress old turns into a summary
 - **Vector memory**: embed and store important facts; retrieve by relevance
@@ -696,12 +714,14 @@ Agents need different types of memory for different time horizons:
 Agent evaluation is harder than single-turn LLM evaluation because: tasks are multi-step, success criteria are often fuzzy, and non-determinism makes reproducibility hard.
 
 **Key metrics**:
+
 - **Task completion rate** — did the agent complete the goal?
 - **Step efficiency** — how many steps did it take vs. optimal?
 - **Tool accuracy** — did it call the right tools with correct parameters?
 - **Error recovery** — when a step fails, does it recover or spiral?
 
 **Testing approaches**:
+
 - **Trajectory evaluation** — evaluate each step in the trace, not just final output
 - **LLM-as-judge** — have a model evaluate whether the agent's reasoning was sound
 - **Deterministic unit tests** — for tool-calling, test that specific inputs produce expected tool calls
@@ -718,6 +738,7 @@ Multi-agent systems decompose complex tasks across specialized agents. Key desig
 **1. Role decomposition** — give each agent a single clear responsibility (retriever, reasoner, verifier, responder). Overlapping roles cause contradictions.
 
 **2. Communication topology**:
+
 - **Orchestrator/worker** — a coordinator agent routes tasks to specialist agents
 - **Peer-to-peer** — agents publish/subscribe to a shared message bus
 - **Sequential pipeline** — output of one agent is input of next
@@ -758,9 +779,10 @@ This is the core **AI safety challenge for agentic systems**. Strategies:
 <details>
 <summary><strong>Q33. What is fine-tuning and when should you do it?</strong></summary>
 
-Fine-tuning updates a pre-trained model's weights on a task-specific dataset to improve performance on that task. 
+Fine-tuning updates a pre-trained model's weights on a task-specific dataset to improve performance on that task.
 
 **When fine-tuning beats RAG / prompting**:
+
 - Desired output **format or style** (tone, structure, length) prompting can't reliably produce
 - **Domain-specific behavior** the base model doesn't exhibit (legal reasoning style, medical coding format)
 - **Latency constraints** — fine-tuned smaller models can outperform larger prompted models
@@ -809,6 +831,7 @@ RLHF produces the behavioral changes (following instructions, being helpful, ref
 When fine-tuning on a narrow domain, models tend to "forget" their general capabilities — a phenomenon called catastrophic forgetting. A legal fine-tune that becomes worse at math or coding.
 
 **Prevention strategies**:
+
 - **LoRA** — because you're only training a small adapter and the base model weights are frozen, forgetting is dramatically reduced
 - **Replay** — mix general-domain examples into the fine-tuning dataset (typically 5–10%)
 - **EWC (Elastic Weight Consolidation)** — regularize updates to parameters important for previous tasks
@@ -846,16 +869,19 @@ LLMOps extends MLOps for the unique challenges of large language models in produ
 LLM monitoring requires tracking both infrastructure metrics and semantic quality metrics:
 
 **Infrastructure**:
+
 - TTFT (time to first token), inter-token latency, p99 latency
 - Throughput (tokens/sec, requests/sec)
 - GPU utilization, memory, error rates
 
 **Quality** (harder — requires sampling + evaluation):
+
 - Hallucination rate (via LLM-as-judge on sampled outputs)
 - Prompt drift — did quality degrade after prompt changes?
 - User signals — thumbs up/down, session abandonment, follow-up corrections
 
 **Cost**:
+
 - Token cost per query (input + output)
 - Average context length (drives cost and latency)
 
@@ -870,11 +896,13 @@ Tools: LangSmith, Langfuse, Phoenix (Arize), Helicone, custom OpenTelemetry pipe
 Guardrails are validation layers that check LLM inputs and outputs against safety and quality policies before they reach users.
 
 **Input guardrails**:
+
 - PII detection — strip or flag personal data before sending to model
 - Topic filtering — reject off-topic or harmful input
 - Prompt injection detection
 
 **Output guardrails**:
+
 - Toxicity / harmful content classifiers
 - Hallucination / faithfulness checking against provided context
 - Schema validation — ensure structured output matches expected format
@@ -906,7 +934,7 @@ Cost = (input tokens + output tokens) × price per token. Optimization levers:
 
 Autoregressive generation is slow because each token requires a full forward pass through the large model. Speculative decoding uses a small **draft model** to generate multiple candidate tokens quickly, then the large **verifier model** checks all of them in **one parallel forward pass**.
 
-```
+```text
 Draft model: generates [tok1, tok2, tok3, tok4, tok5] in 5 fast passes
 Verifier model: evaluates all 5 in 1 pass — accepts first 3, rejects rest
 Net: 3 tokens at the cost of ~1 verifier pass
@@ -922,7 +950,7 @@ Result: **2–3× speedup** with **mathematically identical output distribution*
 
 Traditional **static batching** waits until a batch is full before starting — all requests start and finish together. In LLM serving, requests have wildly different output lengths, so short requests wait for the longest one to finish (GPU sitting idle).
 
-**Continuous batching** (iteration-level scheduling) inserts new requests into the batch at each token generation step — as soon as one request finishes, a new one takes its slot. 
+**Continuous batching** (iteration-level scheduling) inserts new requests into the batch at each token generation step — as soon as one request finishes, a new one takes its slot.
 
 Result: **5–10× higher GPU utilization** and throughput. This is the default in all modern LLM serving frameworks (vLLM, TGI, SGLang, TensorRT-LLM).
 
@@ -939,6 +967,7 @@ Result: **5–10× higher GPU utilization** and throughput. This is the default 
 Hallucinations are model outputs that are fluent and confident but factually incorrect or unsupported by the input. They occur because LLMs are trained to produce plausible-sounding text, not to reason from ground truth.
 
 **Mitigation strategies**:
+
 1. **RAG** — ground responses in retrieved documents; ask the model to cite sources
 2. **Prompt constraints** — "Answer only based on the provided context. Say 'I don't know' if the answer isn't there."
 3. **Temperature reduction** — lower temperature = less creative but more factual
@@ -955,6 +984,7 @@ No technique eliminates hallucinations entirely. The goal is to detect and conta
 <summary><strong>Q44. What is AI alignment and why does it matter?</strong></summary>
 
 Alignment is the problem of ensuring AI systems pursue goals that match human values and intentions — even as they become more capable. A misaligned system might:
+
 - Optimize for proxy metrics rather than true objectives
 - Find unexpected ways to achieve goals with unintended side effects
 - Behave well in training/testing but poorly in deployment
@@ -972,6 +1002,7 @@ Alignment is the problem of ensuring AI systems pursue goals that match human va
 **Risks**: LLMs may memorize and reproduce training data; user inputs may contain sensitive information that gets logged, used for fine-tuning, or leaked in outputs.
 
 **Engineering controls**:
+
 1. **Input screening** — detect PII (names, emails, SSNs, PHI) with NER or regex before sending to model
 2. **Redaction / pseudonymization** — replace PII with tokens before the LLM call; restore after
 3. **Data retention policies** — don't log raw prompts/completions; apply TTL to logs
@@ -997,6 +1028,7 @@ The EU AI Act (effective 2025–2026) is the world's first comprehensive AI regu
 | **Minimal risk** | Spam filters, AI in games | No requirements |
 
 **Engineering implications**:
+
 - Document training data, model cards, risk assessments for high-risk systems
 - Implement explainability and human override for consequential decisions
 - Maintain audit logs for high-risk AI decisions
@@ -1011,12 +1043,14 @@ The EU AI Act (effective 2025–2026) is the world's first comprehensive AI regu
 Bias in AI systems arises from biased training data, proxy features, and optimization for aggregate metrics that mask disparate subgroup performance.
 
 **Detection**:
+
 - **Disaggregate metrics** — measure performance separately across demographic groups (gender, race, age, geography)
 - **Intersectional analysis** — a model may be fair on gender AND race separately but biased for women of color
 - **Counterfactual testing** — change only a protected attribute, see if output changes
 - **Adversarial probing** — test for disparate treatment with synthetic prompts
 
 **Mitigation**:
+
 - Pre-training: balanced datasets, data augmentation for underrepresented groups
 - In-training: re-weighting, adversarial debiasing
 - Post-hoc: calibration per group, output filtering, human review for high-stakes decisions
@@ -1055,7 +1089,7 @@ For production systems, this should happen before launch and continuously via au
 
 **Architecture**:
 
-```
+```text
 Documents → Ingestion Pipeline → Vector DB + Metadata Store
                                          ↓
 User Query → Auth → Query Rewriting → Hybrid Search (BM25 + Vector)
@@ -1070,6 +1104,7 @@ User Query → Auth → Query Rewriting → Hybrid Search (BM25 + Vector)
 ```
 
 **Key design decisions**:
+
 - **Access control**: filter vector search by user-accessible document IDs before ranking
 - **Chunking**: 512-token recursive chunks with 10% overlap; parent-child for dense docs
 - **Embedding model**: domain-fine-tuned embedding for better recall
@@ -1086,18 +1121,21 @@ User Query → Auth → Query Rewriting → Hybrid Search (BM25 + Vector)
 Scaling AI serving is fundamentally different from scaling stateless web services because of GPU resource constraints and the variable-length nature of LLM outputs.
 
 **Phase 1 (100 → 1K RPS)**: Optimize single-server throughput
+
 - Enable continuous batching (5–10× throughput improvement)
 - Quantize to INT8/INT4 (2–4× memory saving = more batch headroom)
 - Enable KV cache compression
 - Profile and eliminate CPU-GPU transfer bottlenecks
 
 **Phase 2 (1K → 10K RPS)**: Horizontal scaling
+
 - Load balancer with session affinity aware of KV cache state
 - Autoscaling group based on GPU utilization + queue depth
 - Semantic caching layer (cache hit rate of 20–40% is common)
 - Model routing: fast small models for simple queries
 
 **Phase 3 (10K → 100K RPS)**: Infrastructure architecture
+
 - Multi-region deployment with latency-based routing
 - Tensor parallelism across GPUs within a server
 - Prefill/decode disaggregation (dedicated prefill and decode instances)
@@ -1115,6 +1153,7 @@ At this scale, system design > model quality. Every decision has a dollar cost.
 ### 700+ Questions, Full Answers
 
 Every topic page has:
+
 - Conceptual questions with full explanations
 - Practical/scenario questions with production-grade answers
 - Trade-off analysis tables
@@ -1142,6 +1181,7 @@ One-page quick-reference cards in [cheatsheets/](cheatsheets/) — the formulas,
 ## Contributing
 
 This repository improves with the community. See [CONTRIBUTING.md](CONTRIBUTING.md) to:
+
 - Add new questions and answers
 - Improve existing answers
 - Add role-specific questions
