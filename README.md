@@ -18,6 +18,8 @@
 
 </div>
 
+**Last updated:** 2026-06-03 12:51 UTC
+
 ---
 
 ## 🚨 Quick Start
