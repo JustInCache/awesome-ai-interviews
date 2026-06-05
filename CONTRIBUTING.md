@@ -11,6 +11,7 @@ Thank you for helping make this the most comprehensive AI interview repository o
 ### What We're Looking For
 
 ✅ **High-value contributions**:
+
 - New interview questions with full, production-quality answers
 - Expanded answers with additional depth, code examples, or trade-off analysis
 - New topic pages for missing areas
@@ -20,6 +21,7 @@ Thank you for helping make this the most comprehensive AI interview repository o
 - Fixed broken links
 
 ❌ **Please avoid**:
+
 - Questions without answers (or with vague "it depends" answers that explain nothing)
 - Duplicate questions already covered in the same file
 - Vendor marketing content or self-promotion
@@ -58,7 +60,7 @@ Thank you for helping make this the most comprehensive AI interview repository o
 
 Copy this template when adding a new question:
 
-```markdown
+````markdown
 **Q: [Your question here]** `[B]` / `[I]` / `[A]`
 
 [Opening sentence: what is the core concept being tested?]
@@ -84,7 +86,7 @@ Copy this template when adding a new question:
 📖 Related: [link to deeper page](relative-link.md)
 
 ---
-```
+````
 
 ### Difficulty Tags
 
@@ -96,7 +98,7 @@ Copy this template when adding a new question:
 
 ## File Structure
 
-```
+```text
 awesome-ai-interviews/
 ├── README.md                    # Top 50 questions + navigation hub
 ├── CONTRIBUTING.md              # This file
@@ -177,7 +179,7 @@ Every answer should pass this checklist before being submitted:
 
 ### PR Title Format
 
-```
+```text
 [type]: short description
 
 Types:
@@ -189,6 +191,7 @@ Types:
 ```
 
 Examples:
+
 - `add: reasoning models topic page`
 - `expand: LoRA answer with QLoRA details and code example`
 - `fix: broken paper link in resources.md`
@@ -219,6 +222,7 @@ Examples:
 ## Reviewing Contributions
 
 PRs are reviewed for:
+
 1. **Accuracy** — is this technically correct?
 2. **Quality** — does it meet the answer quality bar?
 3. **Duplication** — is this already covered?
@@ -233,23 +237,27 @@ Expect feedback within 1–2 weeks. Reviews are about improving content, not gat
 Looking for inspiration? Here are areas that could use more depth:
 
 **Topic expansions**:
+
 - `06-vector-databases.md`: more on HNSW internals, product quantization
 - `11-multimodal-ai.md`: audio models (Whisper, voice AI), video understanding
 - `05-fine-tuning.md`: data synthesis techniques, DPO implementation details
 - `09-evaluation-testing.md`: benchmarking LLMs, constructing golden datasets
 
 **New company pages** (high demand):
+
 - `companies/microsoft.md` (Azure AI, Copilot, GitHub)
 - `companies/amazon-aws.md` (Bedrock, Alexa AI)
 - `companies/nvidia.md` (CUDA, TensorRT, Triton)
 - `companies/mistral.md`
 
 **New cheatsheets**:
+
 - `cheatsheets/fine-tuning.md` — LoRA hyperparameters, data requirements, evaluation
 - `cheatsheets/agent-patterns.md` — ReAct, Plan-Execute, multi-agent topologies
 
 **Coding questions**:
 Any topic page that could benefit from "implement this from scratch" exercises:
+
 - Implement scaled dot-product attention
 - Implement BPE tokenization
 - Build a simple RAG pipeline in 50 lines
