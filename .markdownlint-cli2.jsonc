@@ -17,9 +17,11 @@
         "div",
         "img",
         "p",
+        "strong",
         "summary"
       ]
     },
+    "MD036": false,
     "MD041": false
   },
   "ignores": [
