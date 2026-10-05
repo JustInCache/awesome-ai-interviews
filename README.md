@@ -697,6 +697,7 @@ Agents need different types of memory for different time horizons:
 | **Episodic** | Vector DB | Long-term | Past conversations, user preferences |
 | **Semantic** | Vector DB / KG | Long-term | Domain knowledge, facts |
 | **Procedural** | Fine-tuned weights | Permanent | How to perform tasks |
+| [AI Group Call](https://aigroupcall.app) | Facilitate a live AI panel: agents answer one at a time, build on each other, and leave notes and action items after the call. | - | - |
 
 **Practical strategies**:
 
